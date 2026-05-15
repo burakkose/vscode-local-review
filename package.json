@@ -1,0 +1,760 @@
+{
+  "name": "vscode-local-review",
+  "displayName": "Local Code Review for AI Agents",
+  "description": "PR-style local code review with bidirectional agent collaboration. Multi-review catalog, per-round diffs, comment in the gutter; the agent replies inline via a stable filesystem protocol.",
+  "version": "0.1.0",
+  "publisher": "burakkose",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "SCM Providers",
+    "Other"
+  ],
+  "keywords": [
+    "code review",
+    "diff",
+    "comments",
+    "ai",
+    "agent",
+    "bidirectional",
+    "skill",
+    "local",
+    "multi-review"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "localReview.newReview",
+        "title": "Local Review: New Review (Pick a Folder)",
+        "icon": "$(add)"
+      },
+      {
+        "command": "localReview.switchReview",
+        "title": "Local Review: Switch Review",
+        "icon": "$(list-selection)"
+      },
+      {
+        "command": "localReview.openCatalogReview",
+        "title": "Open This Review"
+      },
+      {
+        "command": "localReview.deleteReview",
+        "title": "Local Review: Delete Review",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "localReview.renameReview",
+        "title": "Local Review: Rename Review",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "localReview.archiveReview",
+        "title": "Local Review: Archive Review",
+        "icon": "$(archive)"
+      },
+      {
+        "command": "localReview.toggleShowOtherWorkspaces",
+        "title": "Local Review: Toggle Show Other Workspaces",
+        "icon": "$(filter-filled)"
+      },
+      {
+        "command": "localReview.openReviewMenu",
+        "title": "Local Review: Actions"
+      },
+      {
+        "command": "localReview.start",
+        "title": "Local Review: New Review",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "localReview.end",
+        "title": "Local Review: End Active Review",
+        "icon": "$(close)"
+      },
+      {
+        "command": "localReview.addComment",
+        "title": "Local Review: Add Comment on Current Line or Selection"
+      },
+      {
+        "command": "localReview.addReviewComment",
+        "title": "Local Review: Add Review-Wide Comment",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "localReview.requestReview",
+        "title": "Local Review: Trigger Review Round (Hand Off to Agent)",
+        "icon": "$(send)"
+      },
+      {
+        "command": "localReview.copyAgentSkill",
+        "title": "Local Review: Copy Agent Skill (One-Time Setup)",
+        "icon": "$(book)"
+      },
+      {
+        "command": "localReview.copyTrigger",
+        "title": "Local Review: Copy Trigger to Clipboard"
+      },
+      {
+        "command": "localReview.copyPrompt",
+        "title": "Local Review: Copy Prompt Body to Clipboard",
+        "icon": "$(clippy)"
+      },
+      {
+        "command": "localReview.openPromptFile",
+        "title": "Local Review: Open prompt.md"
+      },
+      {
+        "command": "localReview.openSkillFile",
+        "title": "Local Review: Open SKILL.md"
+      },
+      {
+        "command": "localReview.openSessionFolder",
+        "title": "Local Review: Reveal Session Folder"
+      },
+      {
+        "command": "localReview.refresh",
+        "title": "Local Review: Refresh",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "localReview.openChangedFile",
+        "title": "Open changed file diff"
+      },
+      {
+        "command": "localReview.openFileFromTree",
+        "title": "Open file"
+      },
+      {
+        "command": "localReview.statusMenu",
+        "title": "Local Review actions"
+      },
+      {
+        "command": "localReview.importResponses",
+        "title": "Local Review: Import Agent Replies Now",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "localReview.filterAll",
+        "title": "Local Review: Show All Comments",
+        "icon": "$(list-flat)"
+      },
+      {
+        "command": "localReview.filterOpen",
+        "title": "Local Review: Show Only Open",
+        "icon": "$(circle-large-outline)"
+      },
+      {
+        "command": "localReview.filterResolved",
+        "title": "Local Review: Show Only Resolved",
+        "icon": "$(check)"
+      },
+      {
+        "command": "localReview.cycleFilter",
+        "title": "Local Review: Cycle Filter"
+      },
+      {
+        "command": "localReview.searchComments",
+        "title": "Local Review: Search Comments...",
+        "icon": "$(search)"
+      },
+      {
+        "command": "localReview.clearSearch",
+        "title": "Local Review: Clear Search"
+      },
+      {
+        "command": "localReview.resolveAllInFile",
+        "title": "Local Review: Resolve All Comments in This File"
+      },
+      {
+        "command": "localReview.resolveAllOpen",
+        "title": "Local Review: Resolve All Open Comments"
+      },
+      {
+        "command": "localReview.deleteAllAgentThreads",
+        "title": "Local Review: Delete All Agent Threads"
+      },
+      {
+        "command": "localReview.nextComment",
+        "title": "Local Review: Jump to Next Open Comment"
+      },
+      {
+        "command": "localReview.previousComment",
+        "title": "Local Review: Jump to Previous Open Comment"
+      },
+      {
+        "command": "localReview.showRoundHistory",
+        "title": "Local Review: Show Round History",
+        "icon": "$(history)"
+      },
+      {
+        "command": "localReview.showDiagnostics",
+        "title": "Local Review: Show Diagnostics",
+        "icon": "$(info)"
+      },
+      {
+        "command": "localReview.restoreFromBackup",
+        "title": "Local Review: Restore From Backup",
+        "icon": "$(history)"
+      },
+      {
+        "command": "localReview.selectViewMode",
+        "title": "Local Review: Switch View (Overall / per-Round)",
+        "icon": "$(diff)"
+      },
+      {
+        "command": "localReview.viewOverall",
+        "title": "Local Review: View Overall Changes"
+      },
+      {
+        "command": "localReview.showAllChanges",
+        "title": "Local Review: Show All Changes in One Pane",
+        "icon": "$(diff-multiple)"
+      },
+      {
+        "command": "localReview.createThread",
+        "title": "Add review comment",
+        "icon": "$(comment)"
+      },
+      {
+        "command": "localReview.replyComment",
+        "title": "Reply"
+      },
+      {
+        "command": "localReview.replyToThread",
+        "title": "Reply",
+        "icon": "$(reply)"
+      },
+      {
+        "command": "localReview.deleteThread",
+        "title": "Delete thread",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "localReview.resolveThread",
+        "title": "Resolve",
+        "icon": "$(check)"
+      },
+      {
+        "command": "localReview.unresolveThread",
+        "title": "Unresolve",
+        "icon": "$(circle-outline)"
+      },
+      {
+        "command": "localReview.openThreadLocation",
+        "title": "Open comment location"
+      },
+      {
+        "command": "localReview.showUsage",
+        "title": "Local Review: Show Usage Documentation",
+        "icon": "$(book)"
+      }
+    ],
+    "menus": {
+      "comments/commentThread/context": [
+        {
+          "command": "localReview.createThread",
+          "group": "inline",
+          "when": "commentController == localReview && commentThreadIsEmpty"
+        },
+        {
+          "command": "localReview.replyComment",
+          "group": "inline",
+          "when": "commentController == localReview && !commentThreadIsEmpty"
+        }
+      ],
+      "comments/commentThread/title": [
+        {
+          "command": "localReview.resolveThread",
+          "group": "inline@1",
+          "when": "commentController == localReview && commentThreadIsResolved == false"
+        },
+        {
+          "command": "localReview.unresolveThread",
+          "group": "inline@1",
+          "when": "commentController == localReview && commentThreadIsResolved == true"
+        },
+        {
+          "command": "localReview.deleteThread",
+          "group": "inline@2",
+          "when": "commentController == localReview"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "localReview.newReview",
+          "when": "view == localReview.reviews",
+          "group": "navigation@1"
+        },
+        {
+          "command": "localReview.switchReview",
+          "when": "view == localReview.reviews",
+          "group": "navigation@2"
+        },
+        {
+          "command": "localReview.toggleShowOtherWorkspaces",
+          "when": "view == localReview.reviews",
+          "group": "navigation@3"
+        },
+        {
+          "command": "localReview.copyAgentSkill",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "navigation@1"
+        },
+        {
+          "command": "localReview.selectViewMode",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "navigation@2"
+        },
+        {
+          "command": "localReview.showAllChanges",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "navigation@3"
+        },
+        {
+          "command": "localReview.requestReview",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "navigation@4"
+        },
+        {
+          "command": "localReview.importResponses",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "navigation@5"
+        },
+        {
+          "command": "localReview.addReviewComment",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "navigation@6"
+        },
+        {
+          "command": "localReview.searchComments",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "navigation@7"
+        },
+        {
+          "command": "localReview.refresh",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "navigation@8"
+        },
+        {
+          "command": "localReview.filterOpen",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "1_filter@1"
+        },
+        {
+          "command": "localReview.filterResolved",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "1_filter@2"
+        },
+        {
+          "command": "localReview.filterAll",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "1_filter@3"
+        },
+        {
+          "command": "localReview.showRoundHistory",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "2_more@1"
+        },
+        {
+          "command": "localReview.showUsage",
+          "when": "view == localReview.reviews || view == localReview.activeReview",
+          "group": "9_help"
+        },
+        {
+          "command": "localReview.end",
+          "when": "view == localReview.activeReview && localReview.active",
+          "group": "9_actions"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "localReview.openCatalogReview",
+          "when": "view == localReview.reviews && viewItem =~ /catalogReview/",
+          "group": "inline@1"
+        },
+        {
+          "command": "localReview.renameReview",
+          "when": "view == localReview.reviews && viewItem =~ /catalogReview/",
+          "group": "1_actions@1"
+        },
+        {
+          "command": "localReview.archiveReview",
+          "when": "view == localReview.reviews && viewItem =~ /catalogReview/",
+          "group": "1_actions@2"
+        },
+        {
+          "command": "localReview.deleteReview",
+          "when": "view == localReview.reviews && viewItem =~ /catalogReview/",
+          "group": "1_actions@3"
+        },
+        {
+          "command": "localReview.openChangedFile",
+          "when": "view == localReview.activeReview && viewItem == reviewFile",
+          "group": "inline"
+        },
+        {
+          "command": "localReview.resolveAllInFile",
+          "when": "view == localReview.activeReview && viewItem =~ /reviewFile/",
+          "group": "1_actions"
+        },
+        {
+          "command": "localReview.replyToThread",
+          "when": "view == localReview.activeReview && viewItem =~ /reviewThread/",
+          "group": "inline@1"
+        },
+        {
+          "command": "localReview.resolveThread",
+          "when": "view == localReview.activeReview && viewItem == reviewThread",
+          "group": "inline@2"
+        },
+        {
+          "command": "localReview.unresolveThread",
+          "when": "view == localReview.activeReview && viewItem == reviewThreadResolved",
+          "group": "inline@2"
+        },
+        {
+          "command": "localReview.deleteThread",
+          "when": "view == localReview.activeReview && viewItem =~ /reviewThread/",
+          "group": "inline@3"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "localReview.createThread",
+          "when": "false"
+        },
+        {
+          "command": "localReview.replyComment",
+          "when": "false"
+        },
+        {
+          "command": "localReview.replyToThread",
+          "when": "false"
+        },
+        {
+          "command": "localReview.deleteThread",
+          "when": "false"
+        },
+        {
+          "command": "localReview.resolveThread",
+          "when": "false"
+        },
+        {
+          "command": "localReview.unresolveThread",
+          "when": "false"
+        },
+        {
+          "command": "localReview.openFileFromTree",
+          "when": "false"
+        },
+        {
+          "command": "localReview.openThreadLocation",
+          "when": "false"
+        },
+        {
+          "command": "localReview.openChangedFile",
+          "when": "false"
+        },
+        {
+          "command": "localReview.openCatalogReview",
+          "when": "false"
+        },
+        {
+          "command": "localReview.statusMenu",
+          "when": "false"
+        },
+        {
+          "command": "localReview.cycleFilter",
+          "when": "false"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "localReview.addComment",
+        "key": "ctrl+alt+r",
+        "mac": "cmd+alt+r",
+        "when": "editorTextFocus && localReview.active"
+      },
+      {
+        "command": "localReview.requestReview",
+        "key": "ctrl+alt+shift+r",
+        "mac": "cmd+alt+shift+r",
+        "when": "localReview.active"
+      },
+      {
+        "command": "localReview.nextComment",
+        "key": "ctrl+alt+j",
+        "mac": "cmd+alt+j",
+        "when": "localReview.active"
+      },
+      {
+        "command": "localReview.previousComment",
+        "key": "ctrl+alt+k",
+        "mac": "cmd+alt+k",
+        "when": "localReview.active"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "localReview",
+          "title": "Local Review",
+          "icon": "media/local-review.svg"
+        }
+      ]
+    },
+    "views": {
+      "localReview": [
+        {
+          "id": "localReview.reviews",
+          "name": "Reviews",
+          "icon": "media/local-review.svg",
+          "contextualTitle": "Local Review Reviews"
+        },
+        {
+          "id": "localReview.activeReview",
+          "name": "Active Review",
+          "icon": "media/local-review.svg",
+          "contextualTitle": "Local Review Active Review"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "localReview.reviews",
+        "contents": "**Reviews** lists every local review stored on this machine.\n\n[Start New Review](command:localReview.newReview)\n[Open Existing Review](command:localReview.switchReview)\n[Show Usage Documentation](command:localReview.showUsage)\n\nUse this pane to switch, rename, archive, or delete reviews without disturbing the active review workflow."
+      },
+      {
+        "view": "localReview.activeReview",
+        "contents": "**Active Review** shows the selected review's repo, branch, agent, comments, and changed files.\n\n[Open Existing Review](command:localReview.switchReview)\n[Start New Review](command:localReview.newReview)\n[Show Usage Documentation](command:localReview.showUsage)\n\nOnce a review is active, use this pane to add review-wide comments, open diffs, trigger agent rounds, import replies, and filter comments."
+      }
+    ],
+    "walkthroughs": [
+      {
+        "id": "localReview.gettingStarted",
+        "title": "Get Started with Local Code Review",
+        "description": "Set up the multi-review catalog and teach your agent the protocol.",
+        "steps": [
+          {
+            "id": "newReview",
+            "title": "1. Start a new review",
+            "description": "Click the **Local Review** icon in the activity bar (the speech-bubble icon), then **Start New Review**. Pick a git folder (current workspace or any other folder on disk) and a base ref (`origin/main` is usually right). The review is saved in a central catalog and you can switch between reviews anytime.\n[Start New Review](command:localReview.newReview)",
+            "media": {
+              "markdown": "media/walkthrough/start.md"
+            },
+            "completionEvents": [
+              "onCommand:localReview.newReview"
+            ]
+          },
+          {
+            "id": "skill",
+            "title": "2. Teach your agent the protocol (one-time per agent session)",
+            "description": "Run **Copy Agent Skill**. It generates a per-review markdown document with absolute file paths baked in and copies it to your clipboard. **Paste it into your AI agent ONCE** (Copilot CLI, Claude, ChatGPT, Cursor, in any terminal — tmux, ssh, integrated, anywhere). After that, every round needs only the word **\"review\"**.\n[Copy Agent Skill](command:localReview.copyAgentSkill)",
+            "media": {
+              "markdown": "media/walkthrough/skill.md"
+            },
+            "completionEvents": [
+              "onCommand:localReview.copyAgentSkill"
+            ]
+          },
+          {
+            "id": "comment",
+            "title": "3. Add comments in the gutter (like a GitHub PR)",
+            "description": "Click any changed file in the Review view to open its diff. Hover the line gutter → click the blue **+** → type → submit. Or select text and press **Ctrl+Alt+R** (Cmd+Alt+R on Mac). Reply / resolve / unresolve / delete from the thread title bar.\n[Open Review View](command:workbench.view.extension.localReview)",
+            "media": {
+              "markdown": "media/walkthrough/comment.md"
+            },
+            "completionEvents": [
+              "onCommand:localReview.addComment",
+              "onCommand:localReview.createThread"
+            ]
+          },
+          {
+            "id": "trigger",
+            "title": "4. Trigger a round",
+            "description": "Press **Ctrl+Alt+Shift+R** (Cmd+Alt+Shift+R on Mac). The prompt file is regenerated; a short trigger like `review (round 3 at /abs/path)` is copied to your clipboard. **Paste into your agent.** The agent reads, edits, writes responses.json. Replies appear in your gutter within a second.\n[Trigger Review Round](command:localReview.requestReview)",
+            "media": {
+              "markdown": "media/walkthrough/trigger.md"
+            },
+            "completionEvents": [
+              "onCommand:localReview.requestReview"
+            ]
+          },
+          {
+            "id": "viewChanges",
+            "title": "5. Inspect what the agent changed",
+            "description": "After a round, click the diff icon in the Review view title bar → **Round N changes**. The file list and diffs are scoped to what changed since round N started — usually the agent's edits. Snapshots are pinned via git refs so they survive amend/rebase/GC. Or click **Show All Changes** to see everything in one scrollable multi-diff editor.\n[Switch View](command:localReview.selectViewMode)",
+            "media": {
+              "markdown": "media/walkthrough/views.md"
+            }
+          },
+          {
+            "id": "switching",
+            "title": "6. Multiple reviews",
+            "description": "Reviews are listed in the Review view. Click any to switch. Use the filter button to show reviews from all workspaces or just this one. Each review is fully isolated (its own state file, its own protocol files).\n[Switch Review](command:localReview.switchReview)",
+            "media": {
+              "markdown": "media/walkthrough/multireview.md"
+            }
+          },
+          {
+            "id": "shortcuts",
+            "title": "7. Shortcuts and reference",
+            "description": "Every command, keybinding, and setting at a glance.",
+            "media": {
+              "markdown": "media/walkthrough/shortcuts.md"
+            }
+          }
+        ]
+      }
+    ],
+    "configuration": {
+      "title": "Local Code Review",
+      "properties": {
+        "localReview.defaultBaseRef": {
+          "type": "string",
+          "default": "",
+          "description": "Default base ref to diff against when creating a new review. Empty = auto-detect (upstream / origin/main / origin/master / main / master)."
+        },
+        "localReview.useMergeBase": {
+          "type": "boolean",
+          "default": true,
+          "description": "Diff against the merge-base of the base ref and HEAD (PR-style)."
+        },
+        "localReview.author": {
+          "type": "string",
+          "default": "You",
+          "description": "Display name for comments you create."
+        },
+        "localReview.agentAuthor": {
+          "type": "string",
+          "default": "Agent",
+          "description": "Default display name for replies imported from responses.json."
+        },
+        "localReview.includeJsonSidecar": {
+          "type": "boolean",
+          "default": true,
+          "description": "Also write prompt.json alongside prompt.md."
+        },
+        "localReview.includeUntracked": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include untracked files (excluding .gitignored) as 'added' files in the review."
+        },
+        "localReview.maxFilesToOpen": {
+          "type": "number",
+          "default": 30,
+          "minimum": 0,
+          "description": "Maximum number of changed-file diffs to open automatically when a review starts. Set to 0 to open none."
+        },
+        "localReview.fileTreeStyle": {
+          "type": "string",
+          "enum": [
+            "compact",
+            "tree",
+            "flat"
+          ],
+          "default": "compact",
+          "markdownEnumDescriptions": [
+            "**Compact (default).** Hierarchical with single-child runs collapsed (like VS Code's explorer compact folders).",
+            "**Tree.** One node per directory level.",
+            "**Flat.** One node per file, full path."
+          ]
+        },
+        "localReview.autoRefresh": {
+          "type": "boolean",
+          "default": true,
+          "description": "Auto-detect changed files on save/create/delete, commit, checkout, and window focus."
+        },
+        "localReview.autoRefreshDelayMs": {
+          "type": "number",
+          "default": 1500,
+          "minimum": 250
+        },
+        "localReview.handoffMode": {
+          "type": "string",
+          "enum": [
+            "clipboard",
+            "vscode-terminal",
+            "none"
+          ],
+          "default": "clipboard",
+          "markdownEnumDescriptions": [
+            "**Clipboard (default).** Refresh + copy trigger; paste into any agent in any terminal.",
+            "**VS Code terminal.** Type into a VS Code integrated terminal (per `terminalStrategy`).",
+            "**None.** Just refresh prompt; you handle the rest."
+          ]
+        },
+        "localReview.triggerTemplate": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Trigger text. Supports `{absPath}`, `{path}`, `{responsesPath}`, `{jsonPath}`, `{round}`."
+        },
+        "localReview.terminalStrategy": {
+          "type": "string",
+          "enum": [
+            "active",
+            "named",
+            "new"
+          ],
+          "default": "active"
+        },
+        "localReview.terminalNamePattern": {
+          "type": "string",
+          "default": ""
+        },
+        "localReview.autoImportResponses": {
+          "type": "boolean",
+          "default": true,
+          "description": "Watch responses.json and import live."
+        },
+        "localReview.promptHeader": {
+          "type": "string",
+          "default": ""
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p .",
+    "compile:test": "tsc -p tsconfig.test.json",
+    "watch": "tsc -w -p .",
+    "pretest": "npm run compile:test",
+    "test": "c8 --all --src=out-test/src --exclude=\"out-test/src/extension.js\" --exclude=\"out-test/src/session.js\" --check-coverage --lines 95 --statements 95 --reporter=text mocha \"out-test/test/**/*.test.js\" --require out-test/test/setup.js",
+    "test:quick": "mocha \"out-test/test/**/*.test.js\" --require out-test/test/setup.js",
+    "lint": "eslint src/ test/ --ext .ts",
+    "lint:fix": "eslint src/ test/ --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "package": "npx --yes @vscode/vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.11.30",
+    "@types/vscode": "~1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "c8": "^11.0.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "mocha": "^11.7.5",
+    "prettier": "^3.8.3",
+    "typescript": "^5.4.0"
+  },
+  "overrides": {
+    "diff": "^8.0.3",
+    "serialize-javascript": "^7.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burakkose/vscode-local-review"
+  }
+}
